@@ -18,8 +18,8 @@ public class Awdenden {
      */
     public static void main(String[] args) throws Exception {
         FFNN f = new FFNN();
-        f.readInstances();
-        Instances jadi = f.getFiltered(f.iris);
+        Instances lala = f.readInstances();
+        Instances jadi = f.getFiltered(lala);
         //System.out.println("yey");
         System.out.println(jadi);
     }

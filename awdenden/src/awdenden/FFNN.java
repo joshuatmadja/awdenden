@@ -1,6 +1,7 @@
 
 package awdenden;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -21,10 +22,13 @@ import weka.filters.supervised.attribute.NominalToBinary;
 public class FFNN {
     public Instances iris;
     
-    public void readInstances() throws FileNotFoundException, IOException, Exception{
-        BufferedReader b = new BufferedReader(new FileReader ("C:/Program Files/Weka-3-8/data/iris.arff"));
+    public Instances readInstances() throws FileNotFoundException, IOException, Exception{
+        String filePath = new File("").getAbsolutePath();
+        BufferedReader b = new BufferedReader(new FileReader (filePath+"/Team.arff"));
         iris = new Instances (b);
         iris.setClassIndex(iris.numAttributes()-1);
+        
+        return iris;
     }
     
     public Instances getFiltered(Instances i) throws Exception{
