@@ -19,7 +19,7 @@ public class Awdenden {
     public static void main(String[] args) throws Exception {
         NaiveBayes008 nb = new NaiveBayes008();
         Instances i = nb.readInstances();
-        nb.showAttributes(i);
+        nb.buildClassifier(i);
     }
     
 }
