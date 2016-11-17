@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Capabilities;
@@ -62,17 +63,52 @@ public class NaiveBayes008 implements Classifier {
         System.out.println("Banyak instance: " + totalInstance);
         int banyakAtribut = in.numAttributes()-1;
         System.out.println("Banyak atribut: " + banyakAtribut);
-        int jumlahKls = in.numClasses();
+        int jumlahKls = in.numClasses();  
+        LearningMatrix[] lm = new LearningMatrix[in.numAttributes()];
         System.out.println("Banyak kelas: "+jumlahKls);
-        int[] nKelas = new int[jumlahKls];
-        for(int i = 0; i<jumlahKls; i++) nKelas[i]=0;
         
+        Attribute clAtt = in.classAttribute();
+        HashMap<String, Integer> hm = new HashMap<>();
+        
+        //membuat sebuah array nKelas untuk melihat banyak instance untuk kelas itu berapa.
+        int[] nKelas = new int[jumlahKls];
+        for(int i = 0; i<jumlahKls; i++){
+            hm.put(clAtt.value(i), i);
+            nKelas[i]=0;
+        }
+        
+        //melihat banyak kelas
         Enumeration<Attribute> enumAtt = in.enumerateAttributes();
         Enumeration<Instance> enumIns = in.enumerateInstances();
         
-        Attribute a = enumAtt.nextElement();
-        System.out.println(a.name());
-        System.out.println(enumIns.nextElement().value(a));
+        while(enumAtt.hasMoreElements()){
+            Attribute a = (Attribute) enumAtt.nextElement();
+            
+            int i = a.index();
+            System.out.println("Indeks: "+i);
+            lm[i] = new LearningMatrix(a.numValues(),jumlahKls);
+            System.out.println("Banyak Distinct Value: "+in.numDistinctValues(i));
+//            System.out.println(a.numValues());
+        }
+        
+        while(enumIns.hasMoreElements()){
+            Instance i = (Instance) enumIns.nextElement();
+            int kelas = hm.get(clAtt.value((int) i.value(in.classIndex())));
+            //menghitung banyaknya distribusi kelas dalam instances
+            nKelas[kelas]++;
+            
+            for(int j = 0; j<in.numAttributes(); j++){
+                if(j!=in.classIndex()){
+                    lm[j].increase((int) i.value(j), kelas);
+                }
+                System.out.print((int) i.value(j)+" ");
+            }
+            System.out.println();
+        }
+        System.out.println();
+        System.out.println(nKelas[0]);
+        System.out.println(nKelas[1]);
+        if(nKelas[0]+nKelas[1]==in.numInstances()) System.out.println("awdenden");
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
