@@ -17,11 +17,9 @@ public class Awdenden {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        FFNN f = new FFNN();
-        Instances lala = f.readInstances();
-        Instances jadi = f.getFiltered(lala);
-        //System.out.println("yey");
-        System.out.println(jadi);
+        NaiveBayes008 nb = new NaiveBayes008();
+        Instances i = nb.readInstances();
+        nb.showAttributes(i);
     }
     
 }
