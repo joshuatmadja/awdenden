@@ -11,6 +11,7 @@ package awdenden;
  */
 public class LearningMatrix {
     private int[][] tabel;
+    private int label;
     
     public LearningMatrix(int distinctVal, int kelas){
         tabel = new int[distinctVal][kelas];
@@ -19,6 +20,11 @@ public class LearningMatrix {
                 tabel[i][j]=0;
             }
         }
+        label = distinctVal;
+    }
+    
+    public int getLabel(){
+        return label;
     }
     
     public int getIsi(int value, int kelas){

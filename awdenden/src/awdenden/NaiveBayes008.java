@@ -87,7 +87,7 @@ public class NaiveBayes008 implements Classifier {
             int i = a.index();
             System.out.println("Indeks: "+i);
             lm[i] = new LearningMatrix(a.numValues(),jumlahKls);
-            System.out.println("Banyak Distinct Value: "+in.numDistinctValues(i));
+          //  System.out.println("Banyak Distinct Value: "+in.numDistinctValues(i));
 //            System.out.println(a.numValues());
         }
         
@@ -101,14 +101,22 @@ public class NaiveBayes008 implements Classifier {
                 if(j!=in.classIndex()){
                     lm[j].increase((int) i.value(j), kelas);
                 }
-                System.out.print((int) i.value(j)+" ");
+                //System.out.print((int) i.value(j)+" ");
             }
-            System.out.println();
+            //System.out.println();
         }
-        System.out.println();
-        System.out.println(nKelas[0]);
-        System.out.println(nKelas[1]);
-        if(nKelas[0]+nKelas[1]==in.numInstances()) System.out.println("awdenden");
+        
+        Enumeration enu = in.enumerateAttributes();
+        while(enu.hasMoreElements()){
+            Attribute a = (Attribute) enu.nextElement();
+            int idx = a.index();
+            System.out.println(a.name()+"\n==========");
+            System.out.println("  p  e");
+            for(int i = 0; i<lm[idx].getLabel(); i++){
+                System.out.println(a.value(i)+" "+lm[idx].getIsi(i, 0)+" "+lm[idx].getIsi(i, 1));
+            }
+            System.out.println("\n");
+        }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
