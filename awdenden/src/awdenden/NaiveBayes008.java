@@ -25,6 +25,7 @@ import weka.filters.supervised.attribute.Discretize;
  */
 public class NaiveBayes008 implements Classifier {
     public Instances inst;
+    public LearningMatrix[] public_lm;
     
     public Instances readInstances() throws IOException{
         String filePath = new File("").getAbsolutePath();
@@ -59,6 +60,7 @@ public class NaiveBayes008 implements Classifier {
 
     @Override
     public void buildClassifier(Instances in) throws Exception {
+        inst = in;
         int totalInstance = in.numInstances();
         System.out.println("Banyak instance: " + totalInstance);
         int banyakAtribut = in.numAttributes()-1;
@@ -117,12 +119,17 @@ public class NaiveBayes008 implements Classifier {
             }
             System.out.println("\n");
         }
+        public_lm = lm;
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public double classifyInstance(Instance instnc) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        double kelas = 0;
+        int nKls = inst.numClasses();
+        
+//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return kelas;
     }
 
     @Override
