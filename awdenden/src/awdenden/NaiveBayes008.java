@@ -29,7 +29,7 @@ public class NaiveBayes008 implements Classifier {
     
     public Instances readInstances() throws IOException{
         String filePath = new File("").getAbsolutePath();
-        BufferedReader b = new BufferedReader(new FileReader(filePath+"/mush.arff"));
+        BufferedReader b = new BufferedReader(new FileReader(filePath+"/iris.arff"));
         inst = new Instances(b);
         int classIndex = getIndeksKelas(inst);
         inst.setClassIndex(classIndex);
@@ -87,7 +87,7 @@ public class NaiveBayes008 implements Classifier {
             Attribute a = (Attribute) enumAtt.nextElement();
             
             int i = a.index();
-            System.out.println("Indeks: "+i);
+            System.out.println("Indeks: "+i+" "+in.numDistinctValues(i));
             lm[i] = new LearningMatrix(a.numValues(),jumlahKls);
           //  System.out.println("Banyak Distinct Value: "+in.numDistinctValues(i));
 //            System.out.println(a.numValues());
@@ -101,11 +101,14 @@ public class NaiveBayes008 implements Classifier {
             
             for(int j = 0; j<in.numAttributes(); j++){
                 if(j!=in.classIndex()){
-                    lm[j].increase((int) i.value(j), kelas);
+                    //System.out.println(j+" "+lm[j].getIsi(j,j));
+                    
+                   lm[j].increase((int) i.value(j), kelas);
+                   
                 }
-                //System.out.print((int) i.value(j)+" ");
+                System.out.print((int) i.value(j)+" ");
             }
-            //System.out.println();
+            System.out.println();
         }
         
         Enumeration enu = in.enumerateAttributes();
@@ -113,9 +116,17 @@ public class NaiveBayes008 implements Classifier {
             Attribute a = (Attribute) enu.nextElement();
             int idx = a.index();
             System.out.println(a.name()+"\n==========");
-            System.out.println("  p  e");
+//            System.out.println("  p  e");
             for(int i = 0; i<lm[idx].getLabel(); i++){
-                System.out.println(a.value(i)+" "+lm[idx].getIsi(i, 0)+" "+lm[idx].getIsi(i, 1));
+                System.out.print(a.value(i)+" ");
+                for(int j = 0; j<jumlahKls; j++)        {
+                    double prob = lm[idx].getIsi(i, j)/(double) nKelas[j];
+                    lm[idx].setIsi(i, j, prob);
+                    if(j==jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+"\n");
+                    else System.out.print(lm[idx].getIsi(i, j)+" ");
+//                System.out.print(lm[idx].getIsi(i, j)+"/"+(double) nKelas[j]+" ");
+//                if(j==jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+"/"+(double)nKelas[j]+"\n");
+                }
             }
             System.out.println("\n");
         }
