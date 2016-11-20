@@ -10,11 +10,11 @@ package awdenden;
  * @author user
  */
 public class LearningMatrix {
-    private int[][] tabel;
+    private double[][] tabel;
     private int label;
     
     public LearningMatrix(int distinctVal, int kelas){
-        tabel = new int[distinctVal][kelas];
+        tabel = new double[distinctVal][kelas];
         for(int i=0; i<distinctVal; i++){
             for(int j = 0; j<kelas; j++){
                 tabel[i][j]=0;
@@ -27,11 +27,11 @@ public class LearningMatrix {
         return label;
     }
     
-    public int getIsi(int value, int kelas){
+    public double getIsi(int value, int kelas){
         return tabel[value][kelas];
     }
     
-    public void setIsi(int x, int y, int value){
+    public void setIsi(int x, int y, double value){
         tabel[x][y]=value;
     }
     
