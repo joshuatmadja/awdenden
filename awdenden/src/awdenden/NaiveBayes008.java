@@ -26,20 +26,23 @@ import weka.filters.supervised.attribute.Discretize;
 public class NaiveBayes008 implements Classifier {
     public Instances inst;
     public LearningMatrix[] public_lm;
+    public int[] nKelas = null;
+    public double[] probPerKelas = null;
+    public HashMap<String, Integer> hm = new HashMap<>();
     
-    public Instances readInstances() throws IOException{
+    public NaiveBayes008() throws IOException{
+        Instances in;
         String filePath = new File("").getAbsolutePath();
         BufferedReader b = new BufferedReader(new FileReader(filePath+"/iris.arff"));
         inst = new Instances(b);
         int classIndex = getIndeksKelas(inst);
         inst.setClassIndex(classIndex);
-        return inst;
     }
     
-    public int getIndeksKelas(Instances in){
+    public final int getIndeksKelas(Instances in){
         int classIndex = 0;
-        for(int i = 0; i<inst.numAttributes(); i++){
-            if(inst.attribute(i).name().equals("class")){
+        for(int i = 0; i<in.numAttributes(); i++){
+            if(in.attribute(i).name().equals("class")){
                 classIndex = i;
                 break;
             }
@@ -70,10 +73,10 @@ public class NaiveBayes008 implements Classifier {
         System.out.println("Banyak kelas: "+jumlahKls);
         
         Attribute clAtt = in.classAttribute();
-        HashMap<String, Integer> hm = new HashMap<>();
+        
         
         //membuat sebuah array nKelas untuk melihat banyak instance untuk kelas itu berapa.
-        int[] nKelas = new int[jumlahKls];
+        nKelas = new int[jumlahKls];
         for(int i = 0; i<jumlahKls; i++){
             hm.put(clAtt.value(i), i);
             nKelas[i]=0;
@@ -111,21 +114,25 @@ public class NaiveBayes008 implements Classifier {
             System.out.println();
         }
         
+        probPerKelas = new double[jumlahKls];
+        for(int i = 0; i<jumlahKls; i++){
+            probPerKelas[i] = (double) (nKelas[i])/in.numInstances();
+            System.out.println(probPerKelas[i]);
+        }
+        
         Enumeration enu = in.enumerateAttributes();
         while(enu.hasMoreElements()){
             Attribute a = (Attribute) enu.nextElement();
             int idx = a.index();
             System.out.println(a.name()+"\n==========");
-//            System.out.println("  p  e");
+            //System.out.println("  p  e");
             for(int i = 0; i<lm[idx].getLabel(); i++){
                 System.out.print(a.value(i)+" ");
-                for(int j = 0; j<jumlahKls; j++)        {
-                    double prob = lm[idx].getIsi(i, j)/(double) nKelas[j];
+                for(int j=0; j<jumlahKls; j++){
+                    double prob = lm[idx].getIsi(i, j)/(double)nKelas[j];
                     lm[idx].setIsi(i, j, prob);
-                    if(j==jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+"\n");
-                    else System.out.print(lm[idx].getIsi(i, j)+" ");
-//                System.out.print(lm[idx].getIsi(i, j)+"/"+(double) nKelas[j]+" ");
-//                if(j==jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+"/"+(double)nKelas[j]+"\n");
+                    if(j!=jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+" ");
+                    else System.out.print(lm[idx].getIsi(i, j)+"\n");
                 }
             }
             System.out.println("\n");
@@ -136,16 +143,65 @@ public class NaiveBayes008 implements Classifier {
 
     @Override
     public double classifyInstance(Instance instnc) throws Exception {
-        double kelas = 0;
-        int nKls = inst.numClasses();
+        //double kelas = 0;
+        double[] d = distributionForInstance(instnc);
+        
+        double max = 0;
+        int idx = 0;
+        
+        for(int i =0; i<d.length; i++){
+            if(d[i]>max){
+                idx = i;
+                max = d[i];
+            }
+        }
         
 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        return kelas;
+        return idx;
     }
 
     @Override
     public double[] distributionForInstance(Instance instnc) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        LearningMatrix[] lm = public_lm;
+        int jumlahKls = instnc.numClasses();
+        Instance in = (Instance) instnc;
+        double[] d = new double[instnc.numClasses()];
+        for(int i = 0; i<d.length; i++){
+            d[i]=1;
+        }
+        
+        
+        Enumeration enu = in.enumerateAttributes();
+        while(enu.hasMoreElements()){
+            Attribute a = (Attribute) enu.nextElement();
+            int idx = a.index();
+//            System.out.println(idx+" "+in.value(idx));
+            System.out.println(a.name()+"\n==========");
+            for(int i = 0; i<d.length; i++){
+                double kali = lm[idx].getIsi((int) in.value(idx), i);
+                d[i]*= kali;
+                System.out.println(i+" "+kali);
+            }
+            
+            
+            //System.out.println("  p  e");
+//            for(int i = 0; i<lm[idx].getLabel(); i++){
+//                System.out.print(a.value(i)+" ");
+//                for(int j=0; j<jumlahKls; j++){
+//                    double prob = lm[idx].getIsi(i, j)/(double)nKelas[j];
+//                    lm[idx].setIsi(i, j, prob);
+//                    if(j!=jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+" ");
+//                    else System.out.print(lm[idx].getIsi(i, j)+"\n");
+//                }
+//            }
+            System.out.println("\n");
+        }
+        for(int i=0; i<d.length; i++){
+                d[i]*=probPerKelas[i];
+                System.out.println("hasil = "+d[i]);
+            }
+        return d;
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
