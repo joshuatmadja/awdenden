@@ -14,6 +14,7 @@ import java.util.HashMap;
 import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.Capabilities;
+import weka.core.CapabilitiesHandler;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.filters.Filter;
@@ -33,7 +34,7 @@ public class NaiveBayes008 implements Classifier {
     public NaiveBayes008() throws IOException{
         Instances in;
         String filePath = new File("").getAbsolutePath();
-        BufferedReader b = new BufferedReader(new FileReader(filePath+"/iris.arff"));
+        BufferedReader b = new BufferedReader(new FileReader(filePath+"/mush.arff"));
         inst = new Instances(b);
         int classIndex = getIndeksKelas(inst);
         inst.setClassIndex(classIndex);
@@ -109,9 +110,9 @@ public class NaiveBayes008 implements Classifier {
                    lm[j].increase((int) i.value(j), kelas);
                    
                 }
-                System.out.print((int) i.value(j)+" ");
+//                System.out.print((int) i.value(j)+" ");
             }
-            System.out.println();
+//            System.out.println();
         }
         
         probPerKelas = new double[jumlahKls];
@@ -206,6 +207,9 @@ public class NaiveBayes008 implements Classifier {
 
     @Override
     public Capabilities getCapabilities() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Capabilities result = new Capabilities((CapabilitiesHandler) this);
+        result.enableAll();
+        return result;
+//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
