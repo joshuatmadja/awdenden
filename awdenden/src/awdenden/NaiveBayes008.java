@@ -29,7 +29,7 @@ public class NaiveBayes008 implements Classifier {
     
     public Instances readInstances() throws IOException{
         String filePath = new File("").getAbsolutePath();
-        BufferedReader b = new BufferedReader(new FileReader(filePath+"/mush.arff"));
+        BufferedReader b = new BufferedReader(new FileReader(filePath+"/iris.arff"));
         inst = new Instances(b);
         int classIndex = getIndeksKelas(inst);
         inst.setClassIndex(classIndex);
@@ -134,7 +134,12 @@ public class NaiveBayes008 implements Classifier {
 
     @Override
     public double[] distributionForInstance(Instance instnc) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        double[] d = new double[instnc.numClasses()];
+        for(int i = 0; i<d.length; i++){
+            d[i]=0;
+        }
+        return d;
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
