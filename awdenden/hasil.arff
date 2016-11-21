@@ -1,4 +1,4 @@
-@relation iris
+@relation iris-weka.filters.unsupervised.attribute.NominalToBinary-Rfirst-last
 
 @attribute sepallength numeric
 @attribute sepalwidth numeric

@@ -29,7 +29,7 @@ public class Test {
             train.setClassIndex(train.numAttributes() - 1);
             
             //Instance of NN
-             MultilayerPerceptron mlp = new MultilayerPerceptron();
+            MultilayerPerceptron mlp = new MultilayerPerceptron();
         
             //Setting Parameters
             mlp.setLearningRate(0.1);
