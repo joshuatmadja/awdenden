@@ -6,6 +6,7 @@
 package awdenden;
 
 import java.io.IOException;
+import weka.classifiers.Evaluation;
 import weka.core.DenseInstance;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -22,6 +23,32 @@ public class Awdenden {
         nb.buildClassifier(nb.getFiltered(i));
         SerializationHelper.write(f+".model", nb);
     }
+	
+	public void printConfusionMatrix(Instances i) throws IOException, Exception {
+		NaiveBayes008 nb = new NaiveBayes008();
+		nb.buildClassifier(nb.getFiltered(i));
+		Evaluation eval = new Evaluation(i);
+		eval.evaluateModel(nb, i);
+		
+		//hasil evaluasi
+		System.out.println(eval.toSummaryString("Evaluation results:\n", false));
+		
+		System.out.println("Correctly Classified Instances = " + eval.pctCorrect());
+		System.out.println("Incorrectly Classified Instances = " + eval.pctIncorrect());
+		System.out.println("Kappa statistic = " + eval.kappa());
+		System.out.println("Mean absolute error = " + eval.meanAbsoluteError());
+		System.out.println("Root mean squared error = " + eval.rootMeanSquaredError());
+		System.out.println("Relative absolute error = " + eval.relativeAbsoluteError());
+		System.out.println("Root relative absolute error = " + eval.rootRelativeSquaredError());
+		System.out.println("Precision = " + eval.precision(1));
+		System.out.println("Recall = " + eval.recall(1));
+		System.out.println("Error Rate = " + eval.errorRate());
+		
+		System.out.println();
+		
+		//the confusion matrix
+		System.out.println(eval.toMatrixString("=== Confusion Matrix ===\n"));
+	}
     /**
      * @param args the command line arguments
      */
@@ -36,6 +63,7 @@ public class Awdenden {
         d = nb.classifyInstance(last);
         System.out.println(ins.attribute(ins.classIndex()).value((int)d));
         aw.saveModel(ins,"NaiveBayes008");
+		aw.printConfusionMatrix(ins);
     }
     
 }

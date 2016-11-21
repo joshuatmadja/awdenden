@@ -92,10 +92,8 @@ public class NaiveBayes008 implements Classifier, Serializable {
             Attribute a = (Attribute) enumAtt.nextElement();
             
             int i = a.index();
-            System.out.println("Indeks: "+i+" "+in.numDistinctValues(i));
+    //        System.out.println("Indeks: "+i+" "+in.numDistinctValues(i));
             lm[i] = new LearningMatrix(a.numValues(),jumlahKls);
-          //  System.out.println("Banyak Distinct Value: "+in.numDistinctValues(i));
-//            System.out.println(a.numValues());
         }
         
         while(enumIns.hasMoreElements()){
@@ -106,41 +104,37 @@ public class NaiveBayes008 implements Classifier, Serializable {
             
             for(int j = 0; j<in.numAttributes(); j++){
                 if(j!=in.classIndex()){
-                    //System.out.println(j+" "+lm[j].getIsi(j,j));
                     
                    lm[j].increase((int) i.value(j), kelas);
                    
                 }
-//                System.out.print((int) i.value(j)+" ");
             }
-//            System.out.println();
         }
         
         probPerKelas = new double[jumlahKls];
         for(int i = 0; i<jumlahKls; i++){
             probPerKelas[i] = (double) (nKelas[i])/in.numInstances();
-            System.out.println(probPerKelas[i]);
+    //        System.out.println(probPerKelas[i]);
         }
         
         Enumeration enu = in.enumerateAttributes();
         while(enu.hasMoreElements()){
             Attribute a = (Attribute) enu.nextElement();
             int idx = a.index();
-            System.out.println(a.name()+"\n==========");
+    //        System.out.println(a.name()+"\n==========");
             //System.out.println("  p  e");
             for(int i = 0; i<lm[idx].getLabel(); i++){
-                System.out.print(a.value(i)+" ");
+    //            System.out.print(a.value(i)+" ");
                 for(int j=0; j<jumlahKls; j++){
                     double prob = lm[idx].getIsi(i, j)/(double)nKelas[j];
                     lm[idx].setIsi(i, j, prob);
-                    if(j!=jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+" ");
-                    else System.out.print(lm[idx].getIsi(i, j)+"\n");
+    //                if(j!=jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+" ");
+    //                else System.out.print(lm[idx].getIsi(i, j)+"\n");
                 }
             }
-            System.out.println("\n");
+    //        System.out.println("\n");
         }
         public_lm = lm;
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -158,7 +152,6 @@ public class NaiveBayes008 implements Classifier, Serializable {
             }
         }
         
-//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         return idx;
     }
 
@@ -177,33 +170,20 @@ public class NaiveBayes008 implements Classifier, Serializable {
         while(enu.hasMoreElements()){
             Attribute a = (Attribute) enu.nextElement();
             int idx = a.index();
-//            System.out.println(idx+" "+in.value(idx));
-            System.out.println(a.name()+"\n==========");
+    //        System.out.println(a.name()+"\n==========");
             for(int i = 0; i<d.length; i++){
                 double kali = lm[idx].getIsi((int) in.value(idx), i);
                 d[i]*= kali;
-                System.out.println(i+" "+kali);
+    //            System.out.println(i+" "+kali);
             }
-            
-            
-            //System.out.println("  p  e");
-//            for(int i = 0; i<lm[idx].getLabel(); i++){
-//                System.out.print(a.value(i)+" ");
-//                for(int j=0; j<jumlahKls; j++){
-//                    double prob = lm[idx].getIsi(i, j)/(double)nKelas[j];
-//                    lm[idx].setIsi(i, j, prob);
-//                    if(j!=jumlahKls-1) System.out.print(lm[idx].getIsi(i, j)+" ");
-//                    else System.out.print(lm[idx].getIsi(i, j)+"\n");
-//                }
-//            }
-            System.out.println("\n");
+			
+    //        System.out.println("\n");
         }
         for(int i=0; i<d.length; i++){
                 d[i]*=probPerKelas[i];
-                System.out.println("hasil = "+d[i]);
+    //            System.out.println("hasil = "+d[i]);
             }
         return d;
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -211,6 +191,5 @@ public class NaiveBayes008 implements Classifier, Serializable {
         Capabilities result = new Capabilities((CapabilitiesHandler) this);
         result.enableAll();
         return result;
-//throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
