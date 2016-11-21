@@ -35,7 +35,7 @@ public class Awdenden {
         nb.buildClassifier(ins);
         d = nb.classifyInstance(last);
         System.out.println(ins.attribute(ins.classIndex()).value((int)d));
-       // aw.saveModel(ins,"NaiveBayes008");
+        aw.saveModel(ins,"NaiveBayes008");
     }
     
 }

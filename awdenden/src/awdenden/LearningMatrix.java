@@ -5,11 +5,13 @@
  */
 package awdenden;
 
+import java.io.Serializable;
+
 /**
  *
  * @author user
  */
-public class LearningMatrix {
+public class LearningMatrix implements Serializable{
     private double[][] tabel;
     private double label;
     

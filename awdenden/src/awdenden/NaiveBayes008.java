@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import weka.classifiers.Classifier;
@@ -24,7 +25,7 @@ import weka.filters.supervised.attribute.Discretize;
  *
  * @author user
  */
-public class NaiveBayes008 implements Classifier {
+public class NaiveBayes008 implements Classifier, Serializable {
     public Instances inst;
     public LearningMatrix[] public_lm;
     public int[] nKelas = null;
