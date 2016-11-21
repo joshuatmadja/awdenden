@@ -20,9 +20,9 @@ import weka.classifiers.Evaluation;
  */
 public class Main {
     public static void main(String args[]) throws Exception {
-        /*Test test = new Test();
-        test.simpleWekaTrain("C:\\Users\\Kamal Nadjieb\\Documents\\NetBeansProjects\\awdenden\\awdenden\\src\\iris.arff");
-        */
+        //Test test = new Test();
+        //test.simpleWekaTrain("C:\\Users\\Kamal Nadjieb\\Documents\\NetBeansProjects\\awdenden\\awdenden\\src\\iris.arff");
+        
         /*LOAD DATA TRAIN*/
         FileReader train_reader = new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff");
         Instances data_train = new Instances(train_reader);
@@ -30,10 +30,8 @@ public class Main {
             data_train.setClassIndex(data_train.numAttributes() - 1);
         }
         
-        /*System.out.println(data_train.toSummaryString());
-        for (int i = 0; i < data_train.numAttributes(); ++i) {
-            System.out.println(data_train.attribute(0).isNumeric());
-        }*/
+        System.out.println(data_train.instance(0).classValue());
+        //System.out.println(data_train.numInstances());
         
         /*DISCRETIZE ATTRIBUTE*/
         //set options
@@ -47,22 +45,31 @@ public class Main {
         Instances data_train_new = Filter.useFilter(data_train, norm);
         
         /*BUILD A NEURAL CLASSIFIER*/
+        int n_in = data_train_new.numAttributes()- 1;
+        int n_out = data_train_new.numClasses();
+        if (n_out <= 2) {
+            --n_out;
+        }
+        
         FFNN ffnn = new FFNN();
-        ffnn.setLearningRate(0.3);
-        ffnn.setNIn(0);
-        ffnn.setNOut(0);
-        ffnn.setNHidden(0);
-        //ffnn.buildClassifier(data_train_new);
+        ffnn.setLearningRate(0.5);
+        ffnn.setNIn(n_in);
+        ffnn.setNOut(n_out);
+        ffnn.setNHidden(4);
+        ffnn.buildClassifier(data_train_new);
         
         /* EVALUATION */
-        /*Evaluation eval = new Evaluation(data_train_new);
+        ///*
+        Evaluation eval = new Evaluation(data_train_new);
         eval.evaluateModel(ffnn, data_train_new);
+        //eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
         System.out.println(eval.errorRate()); //Printing Training Mean root squared Error
         System.out.println(eval.toSummaryString()); //Summary of Training
-        */
+        //*/
         
-        //////////////////////
-        /*Instances datapredict = new Instances(
+        /*CLASSIFY DATAPREDICT*/
+        ///*
+        Instances datapredict = new Instances(
         new BufferedReader(new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff")));
         datapredict.setClassIndex(datapredict.numAttributes() - 1);
         Instances predicteddata = new Instances(datapredict);
@@ -72,11 +79,11 @@ public class Main {
             double clsLabel = ffnn.classifyInstance(datapredict.instance(i));
             predicteddata.instance(i).setClassValue(clsLabel);
         }
-        */
+        //*/
         
         //Storing again in arff
         BufferedWriter writer = new BufferedWriter(new FileWriter("hasil.arff"));
-        writer.write(data_train_new.toString());
+        writer.write(predicteddata.toString());
         writer.newLine();
         writer.flush();
         writer.close();

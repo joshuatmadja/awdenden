@@ -1,4 +1,5 @@
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Random;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -8,8 +9,10 @@ public class FFNN extends AbstractClassifier {
     private int n_in;
     private int n_out;
     private int n_hidden;
+    private ArrayList<Weight> weights;
     
     public FFNN()  {
+        weights = new ArrayList<>();
         System.out.println("FFNN CTOR");
     }
     
@@ -19,7 +22,7 @@ public class FFNN extends AbstractClassifier {
     }
     
     public void setNIn(final int n_in) {
-        this.n_in = n_in;
+        this.n_in = n_in+1;
     }
     
     public void setNOut(final int n_out) {
@@ -27,7 +30,11 @@ public class FFNN extends AbstractClassifier {
     }
     
     public void setNHidden(final int n_hidden) {
-        this.n_hidden = n_hidden;
+        if (n_hidden > 0) {
+            this.n_hidden = n_hidden+1;
+        } else {
+            this.n_hidden = n_hidden;
+        }
     }
     
     //GETTER
@@ -47,14 +54,191 @@ public class FFNN extends AbstractClassifier {
         return this.n_hidden;
     }
     
+    public int getTotalN() {
+        return this.n_in + this.n_out + this.n_hidden;
+    }
+    
     //
-    @Override
-    public void buildClassifier(Instances i) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public double nettValue(int nodeOut, ArrayList<Double> node) {
+        double result = 0.0;
+        int i = 0;
+        while (weights.get(i).getNodeOut() != nodeOut) {
+            ++i;
+        }
+        
+        while (weights.get(i).getNodeOut() == nodeOut) {
+            Weight w = weights.get(i);
+            result += node.get(w.getNodeIn()) * w.getValue();
+            ++i;
+        }
+        return result;
+    }
+    
+    public double outputValue(double x) {
+        return 1/1+(Math.exp(-x));
+    }
+    
+    public double errorOutput(double output, double target) {
+        return output*(1-output)*(target-output);
+    }
+    
+    public double errorHidden(int nodeIn, double output, ArrayList<Double> error) {
+        double result = 0.0;
+        int i = 0;
+        while (weights.get(i).getNodeIn() != nodeIn) {
+            ++i;
+        }
+        while (weights.get(i).getNodeIn() == nodeIn) {
+            Weight w = weights.get(i);
+            result += error.get(w.getNodeOut()) * w.getValue();
+            ++i;
+        }
+        result = output*(1-output)*result;
+        return result;
+    }
+    
+    public double getNewWeight(Weight w, ArrayList<Double> node, ArrayList<Double> error) {
+        return w.getValue() + this.learning_rate * node.get(w.getNodeIn()) * error.get(w.getNodeOut());
     }
     
     @Override
-    public double classifyInstance(Instance instnc) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void buildClassifier(Instances dataset) throws Exception {
+        //Membuat dan inisialisasi weight
+        for (int i = 0; i < this.n_in; ++i) {
+            int threshold;
+            if (this.n_hidden == 0) {
+                threshold = this.getTotalN();
+            } else {
+                threshold = this.n_in+this.n_hidden;      
+            }
+            for (int j = this.n_in; j < threshold; ++j) {
+                Weight w = new Weight();
+                w.setValue(new Random().nextDouble() * 0.1 - 0.05);
+                w.setNodeIn(i);
+                w.setNodeOut(j);
+                weights.add(w);
+            }
+        }
+        if (this.n_hidden != 0) {
+            for (int i = this.n_in; i < this.n_in + this.n_hidden; ++i) {
+                for (int j = this.n_in + this.n_hidden; j < this.getTotalN(); ++j) {
+                    Weight w = new Weight();
+                    w.setValue((new Random().nextDouble() * 0.1 - 0.05));
+                    w.setNodeIn(i);
+                    w.setNodeOut(j);
+                    weights.add(w);
+                }
+            }
+        }
+        
+        //
+        int loop = 0;
+        while (loop != 2) {
+            for (int i = 0; i < dataset.numInstances(); ++i) {
+                //Membuat node
+                ArrayList<Double> node;
+                node = new ArrayList<>();
+            
+                //-->Forward
+                for (int j = 0; j < this.getTotalN(); ++j) {
+                    double result;
+                    if (j < this.n_in) {
+                        if (j == 0) {
+                            result = 1.0;
+                        } else {
+                            result = dataset.instance(i).value(j-1);
+                        }
+                    } else {
+                        if ((j == this.n_in) && (this.n_hidden == 0)) {
+                            result = 1.0;
+                        } else {
+                            result = this.outputValue(this.nettValue(j, node));
+                        }
+                    }
+                    node.add(result);
+                }
+            
+                //<--Backward
+                ArrayList<Double> error;
+                error = new ArrayList<>();
+                for (int j = 0; j < this.getTotalN(); ++j) {
+                    error.add(0.00);
+                }
+            
+                double target = dataset.instance(i).classValue();
+                //Mencari output
+                //Output Error
+                double temp = this.n_out-1;
+                for (int j = this.getTotalN()-1; j >= this.n_in + this.n_hidden; --j) {
+                    if (temp == target) {
+                        error.set(j, errorOutput(node.get(j), 1.0));
+                    } else {
+                        error.set(j, errorOutput(node.get(j), 0.0));
+                    }
+                    --temp;
+                }
+            
+                if (this.n_hidden != 0) {
+                    for (int j = this.n_in + this.n_hidden - 1; j >= this.n_in; --j) {
+                        if (j == this.n_in + this.n_hidden - 1) {
+                            error.set(j, 1.0);
+                        } else {
+                            error.set(j, this.errorHidden(j, node.get(j), error));
+                        }
+                    }
+                }
+            
+                //Set nilai baru pada weights
+                for (int j = 0; j < weights.size(); ++j) {
+                    weights.get(j).setValue(this.getNewWeight(weights.get(j),node,error));
+                }
+            }
+        ++loop;
+        }
+    }
+    
+    @Override
+    public double classifyInstance(Instance data) throws Exception {
+        //Membuat node
+        ArrayList<Double> node;
+        node = new ArrayList<>();
+            
+        //-->Forward
+        for (int j = 0; j < this.getTotalN(); ++j) {
+            double result;
+            if (j < this.n_in) {
+                if (j == 0) {
+                    result = 1.0;
+                } else {
+                    result = data.value(j-1);
+                }
+            } else {
+                if ((j == this.n_in) && (this.n_hidden == 0)) {
+                    result = 1.0;
+                } else {
+                    result = this.outputValue(this.nettValue(j, node));
+                }
+            }
+            node.add(result);
+        }
+        
+        double result = 0.0;
+        if (data.numClasses() > 2) {
+            double result_class = 0.0;
+            double result_output = node.get(this.n_in + this.n_hidden);
+            for (int k = this.n_in + this.n_hidden; k < this.getTotalN(); ++k) {
+                if (result_output < node.get(k)) {
+                    result_output = node.get(k);
+                    result_class = this.n_in + this.n_hidden - this.getTotalN() + data.numClasses();
+                }
+            }
+            return result_class;
+        } else {
+            if (node.get(node.size()-1) > 0.5) {
+                return 0.0;
+            } else {
+                return 1.0;
+            }
+        }
     }
 }

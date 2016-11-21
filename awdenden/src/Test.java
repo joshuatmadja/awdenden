@@ -54,6 +54,7 @@ public class Test {
             //Predict Part
             for (int i = 0; i < datapredict.numInstances(); i++) {
                 double clsLabel = mlp.classifyInstance(datapredict.instance(i));
+                System.out.println(clsLabel);
                 predicteddata.instance(i).setClassValue(clsLabel);
             }
         
