@@ -1,10 +1,12 @@
-public class Weight {
+import java.io.Serializable;
+
+public class Weight implements Serializable {
     private double value;
     private int node_in;
     private int node_out;
     
     public Weight() {
-        System.out.println("Weight CTOR");
+        //System.out.println("Weight CTOR");
     }
     
     //SETTER

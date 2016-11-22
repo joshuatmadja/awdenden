@@ -13,7 +13,7 @@ public class FFNN extends AbstractClassifier {
     
     public FFNN()  {
         weights = new ArrayList<>();
-        System.out.println("FFNN CTOR");
+        //System.out.println("FFNN CTOR");
     }
     
     //SETTER
@@ -75,7 +75,8 @@ public class FFNN extends AbstractClassifier {
     }
     
     public double outputValue(double x) {
-        return 1/1+(Math.exp(-x));
+        //System.out.println(1/(1+(Math.exp(-x))));
+        return 1/(1+(Math.exp(-x)));
     }
     
     public double errorOutput(double output, double target) {
@@ -88,7 +89,7 @@ public class FFNN extends AbstractClassifier {
         while (weights.get(i).getNodeIn() != nodeIn) {
             ++i;
         }
-        while (weights.get(i).getNodeIn() == nodeIn) {
+        while ((i < this.weights.size()) && (weights.get(i).getNodeIn() == nodeIn)) {
             Weight w = weights.get(i);
             result += error.get(w.getNodeOut()) * w.getValue();
             ++i;
@@ -105,25 +106,29 @@ public class FFNN extends AbstractClassifier {
     public void buildClassifier(Instances dataset) throws Exception {
         //Membuat dan inisialisasi weight
         for (int i = 0; i < this.n_in; ++i) {
-            int threshold;
+            int batas_awal;
+            int batas_akhir;
             if (this.n_hidden == 0) {
-                threshold = this.getTotalN();
+                batas_awal = this.getNIn();
+                batas_akhir = this.getTotalN();
             } else {
-                threshold = this.n_in+this.n_hidden;      
+                batas_awal = this.getNIn() + 1;
+                batas_akhir = this.n_in + this.n_hidden;      
             }
-            for (int j = this.n_in; j < threshold; ++j) {
+            for (int j = batas_awal; j < batas_akhir; ++j) {
                 Weight w = new Weight();
                 w.setValue(new Random().nextDouble() * 0.1 - 0.05);
                 w.setNodeIn(i);
                 w.setNodeOut(j);
-                weights.add(w);
+                weights.add(w);    
             }
         }
+        
         if (this.n_hidden != 0) {
             for (int i = this.n_in; i < this.n_in + this.n_hidden; ++i) {
                 for (int j = this.n_in + this.n_hidden; j < this.getTotalN(); ++j) {
                     Weight w = new Weight();
-                    w.setValue((new Random().nextDouble() * 0.1 - 0.05));
+                    w.setValue(new Random().nextDouble() * 0.1 - 0.05);
                     w.setNodeIn(i);
                     w.setNodeOut(j);
                     weights.add(w);
@@ -133,7 +138,7 @@ public class FFNN extends AbstractClassifier {
         
         //
         int loop = 0;
-        while (loop != 2) {
+        while (loop < 1000) {
             for (int i = 0; i < dataset.numInstances(); ++i) {
                 //Membuat node
                 ArrayList<Double> node;
@@ -149,7 +154,7 @@ public class FFNN extends AbstractClassifier {
                             result = dataset.instance(i).value(j-1);
                         }
                     } else {
-                        if ((j == this.n_in) && (this.n_hidden == 0)) {
+                        if ((j == this.n_in) && (this.n_hidden != 0)) {
                             result = 1.0;
                         } else {
                             result = this.outputValue(this.nettValue(j, node));
@@ -157,18 +162,20 @@ public class FFNN extends AbstractClassifier {
                     }
                     node.add(result);
                 }
-            
+                
                 //<--Backward
                 ArrayList<Double> error;
                 error = new ArrayList<>();
                 for (int j = 0; j < this.getTotalN(); ++j) {
                     error.add(0.00);
                 }
-            
+                
+                //Target
                 double target = dataset.instance(i).classValue();
-                //Mencari output
+                
                 //Output Error
                 double temp = this.n_out-1;
+                
                 for (int j = this.getTotalN()-1; j >= this.n_in + this.n_hidden; --j) {
                     if (temp == target) {
                         error.set(j, errorOutput(node.get(j), 1.0));
@@ -180,7 +187,7 @@ public class FFNN extends AbstractClassifier {
             
                 if (this.n_hidden != 0) {
                     for (int j = this.n_in + this.n_hidden - 1; j >= this.n_in; --j) {
-                        if (j == this.n_in + this.n_hidden - 1) {
+                        if (j == this.n_in) {
                             error.set(j, 1.0);
                         } else {
                             error.set(j, this.errorHidden(j, node.get(j), error));
@@ -202,7 +209,7 @@ public class FFNN extends AbstractClassifier {
         //Membuat node
         ArrayList<Double> node;
         node = new ArrayList<>();
-            
+        
         //-->Forward
         for (int j = 0; j < this.getTotalN(); ++j) {
             double result;
@@ -213,7 +220,7 @@ public class FFNN extends AbstractClassifier {
                     result = data.value(j-1);
                 }
             } else {
-                if ((j == this.n_in) && (this.n_hidden == 0)) {
+                if ((j == this.n_in) && (this.n_hidden != 0)) {
                     result = 1.0;
                 } else {
                     result = this.outputValue(this.nettValue(j, node));
@@ -224,12 +231,14 @@ public class FFNN extends AbstractClassifier {
         
         double result = 0.0;
         if (data.numClasses() > 2) {
+            double counter = 0.0;
             double result_class = 0.0;
             double result_output = node.get(this.n_in + this.n_hidden);
-            for (int k = this.n_in + this.n_hidden; k < this.getTotalN(); ++k) {
+            for (int k = this.n_in + this.n_hidden + 1; k < this.getTotalN(); ++k) {
+                ++counter;
                 if (result_output < node.get(k)) {
                     result_output = node.get(k);
-                    result_class = this.n_in + this.n_hidden - this.getTotalN() + data.numClasses();
+                    result_class = counter;
                 }
             }
             return result_class;

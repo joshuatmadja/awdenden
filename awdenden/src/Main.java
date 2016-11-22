@@ -2,27 +2,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.util.Random;
 
 import weka.core.Instances;
 import weka.filters.Filter;
 import weka.filters.unsupervised.attribute.NominalToBinary;
 import weka.classifiers.Evaluation;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Kamal Nadjieb
- */
 public class Main {
     public static void main(String args[]) throws Exception {
-        //Test test = new Test();
-        //test.simpleWekaTrain("C:\\Users\\Kamal Nadjieb\\Documents\\NetBeansProjects\\awdenden\\awdenden\\src\\iris.arff");
-        
         /*LOAD DATA TRAIN*/
         FileReader train_reader = new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff");
         Instances data_train = new Instances(train_reader);
@@ -30,7 +18,7 @@ public class Main {
             data_train.setClassIndex(data_train.numAttributes() - 1);
         }
         
-        System.out.println(data_train.instance(0).classValue());
+        //System.out.println(data_train.instance(0).classValue());
         //System.out.println(data_train.numInstances());
         
         /*DISCRETIZE ATTRIBUTE*/
@@ -61,8 +49,8 @@ public class Main {
         /* EVALUATION */
         ///*
         Evaluation eval = new Evaluation(data_train_new);
-        eval.evaluateModel(ffnn, data_train_new);
-        //eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
+        //eval.evaluateModel(ffnn, data_train_new);
+        eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
         System.out.println(eval.errorRate()); //Printing Training Mean root squared Error
         System.out.println(eval.toSummaryString()); //Summary of Training
         //*/
