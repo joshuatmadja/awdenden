@@ -5,8 +5,10 @@
  */
 package awdenden;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Random;
+import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -27,6 +29,19 @@ public class Awdenden {
     public void saveModel(Instances i, String f) throws IOException, Exception{
         //nb.buildClassifier(nb.getFiltered(i));
         SerializationHelper.write(f+".model", nb);
+    }
+	
+	public Classifier readModel(Instances current, String f) throws FileNotFoundException, Exception {
+        Classifier cls = null;
+        try{  
+            cls = (Classifier) SerializationHelper.read(f+".model");
+            System.out.println(f+".model berhasil dibaca\n");
+            System.out.println("\nModel yang terbaca\n==================\n"+cls.toString());
+        }
+        catch (FileNotFoundException e){
+            System.out.println("Berkas "+f+".model tidak ditemukan\n");
+        }
+        return cls;
     }
 	
 	public void printConfusionMatrix(Instances i) throws IOException, Exception {
