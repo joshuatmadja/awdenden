@@ -35,7 +35,7 @@ public class NaiveBayes008 implements Classifier, Serializable {
     public NaiveBayes008() throws IOException{
         Instances in;
         String filePath = new File("").getAbsolutePath();
-        BufferedReader b = new BufferedReader(new FileReader(filePath+"/mush.arff"));
+        BufferedReader b = new BufferedReader(new FileReader(filePath+"/mush_test.arff"));
         inst = new Instances(b);
         int classIndex = getIndeksKelas(inst);
         inst.setClassIndex(classIndex);
@@ -67,12 +67,12 @@ public class NaiveBayes008 implements Classifier, Serializable {
     public void buildClassifier(Instances in) throws Exception {
         inst = in;
         int totalInstance = in.numInstances();
-        System.out.println("Banyak instance: " + totalInstance);
+//        System.out.println("Banyak instance: " + totalInstance);
         int banyakAtribut = in.numAttributes()-1;
-        System.out.println("Banyak atribut: " + banyakAtribut);
+//        System.out.println("Banyak atribut: " + banyakAtribut);
         int jumlahKls = in.numClasses();  
         LearningMatrix[] lm = new LearningMatrix[in.numAttributes()];
-        System.out.println("Banyak kelas: "+jumlahKls);
+//        System.out.println("Banyak kelas: "+jumlahKls);
         
         Attribute clAtt = in.classAttribute();
         
@@ -146,7 +146,7 @@ public class NaiveBayes008 implements Classifier, Serializable {
         int idx = 0;
         
         for(int i =0; i<d.length; i++){
-            if(d[i]>max){
+            if(d[i]>=max){
                 idx = i;
                 max = d[i];
             }
@@ -160,7 +160,7 @@ public class NaiveBayes008 implements Classifier, Serializable {
         LearningMatrix[] lm = public_lm;
         int jumlahKls = instnc.numClasses();
         Instance in = (Instance) instnc;
-        double[] d = new double[instnc.numClasses()];
+        double[] d = new double[jumlahKls];
         for(int i = 0; i<d.length; i++){
             d[i]=1;
         }

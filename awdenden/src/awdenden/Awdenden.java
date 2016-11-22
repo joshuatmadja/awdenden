@@ -6,6 +6,7 @@
 package awdenden;
 
 import java.io.IOException;
+import java.util.Random;
 import weka.classifiers.Evaluation;
 import weka.core.DenseInstance;
 import weka.core.Instance;
@@ -18,31 +19,36 @@ import weka.core.SerializationHelper;
  */
 public class Awdenden {
 
+	public static NaiveBayes008 nb;
+
+	public Awdenden() throws IOException {
+		this.nb = new NaiveBayes008();
+	}
     public void saveModel(Instances i, String f) throws IOException, Exception{
-        NaiveBayes008 nb = new NaiveBayes008();
-        nb.buildClassifier(nb.getFiltered(i));
+        //nb.buildClassifier(nb.getFiltered(i));
         SerializationHelper.write(f+".model", nb);
     }
 	
 	public void printConfusionMatrix(Instances i) throws IOException, Exception {
-		NaiveBayes008 nb = new NaiveBayes008();
-		nb.buildClassifier(nb.getFiltered(i));
+		//nb.buildClassifier(nb.getFiltered(i));
 		Evaluation eval = new Evaluation(i);
-		eval.evaluateModel(nb, i);
+//		eval.evaluateModel(nb, i);
+		eval.crossValidateModel(nb, i, 10, new Random(1));
 		
+		System.out.println();
 		//hasil evaluasi
-		System.out.println(eval.toSummaryString("Evaluation results:\n", false));
+		System.out.println(eval.toSummaryString("Evaluation results:", false));
 		
-		System.out.println("Correctly Classified Instances = " + eval.pctCorrect());
-		System.out.println("Incorrectly Classified Instances = " + eval.pctIncorrect());
-		System.out.println("Kappa statistic = " + eval.kappa());
-		System.out.println("Mean absolute error = " + eval.meanAbsoluteError());
-		System.out.println("Root mean squared error = " + eval.rootMeanSquaredError());
-		System.out.println("Relative absolute error = " + eval.relativeAbsoluteError());
-		System.out.println("Root relative absolute error = " + eval.rootRelativeSquaredError());
-		System.out.println("Precision = " + eval.precision(1));
-		System.out.println("Recall = " + eval.recall(1));
-		System.out.println("Error Rate = " + eval.errorRate());
+//		System.out.println("Correctly Classified Instances = " + eval.pctCorrect());
+//		System.out.println("Incorrectly Classified Instances = " + eval.pctIncorrect());
+//		System.out.println("Kappa statistic = " + eval.kappa());
+//		System.out.println("Mean absolute error = " + eval.meanAbsoluteError());
+//		System.out.println("Root mean squared error = " + eval.rootMeanSquaredError());
+//		System.out.println("Relative absolute error = " + eval.relativeAbsoluteError());
+//		System.out.println("Root relative absolute error = " + eval.rootRelativeSquaredError());
+//		System.out.println("Precision = " + eval.precision(1));
+//		System.out.println("Recall = " + eval.recall(1));
+//		System.out.println("Error Rate = " + eval.errorRate());
 		
 		System.out.println();
 		
@@ -53,7 +59,6 @@ public class Awdenden {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-        NaiveBayes008 nb = new NaiveBayes008();
         Awdenden aw = new Awdenden();
         double d;
         //Instances i = nb.readInstances();
@@ -61,7 +66,7 @@ public class Awdenden {
         Instance last = ins.firstInstance();
         nb.buildClassifier(ins);
         d = nb.classifyInstance(last);
-        System.out.println(ins.attribute(ins.classIndex()).value((int)d));
+        //System.out.println(ins.attribute(ins.classIndex()).value((int)d));
         aw.saveModel(ins,"NaiveBayes008");
 		aw.printConfusionMatrix(ins);
     }
