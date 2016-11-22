@@ -13,15 +13,17 @@ public class Main {
     public static void main(String args[]) throws Exception {
         /*LOAD DATA TRAIN*/
         FileReader train_reader = new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff");
+        //FileReader train_reader = new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\mush.arff");
+        //FileReader train_reader = new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\Team_test.arff");
         Instances data_train = new Instances(train_reader);
-        if(data_train.classIndex() == -1) {
+        if (data_train.classIndex() == -1) {
             data_train.setClassIndex(data_train.numAttributes() - 1);
         }
         
         //System.out.println(data_train.instance(0).classValue());
         //System.out.println(data_train.numInstances());
         
-        /*DISCRETIZE ATTRIBUTE*/
+        /*NOMINAL TO BINARY ATTRIBUTE*/
         //set options
         String[] options = new String[2];
         options[0] = "-R";
@@ -38,9 +40,10 @@ public class Main {
         if (n_out <= 2) {
             --n_out;
         }
+        //System.out.println("hai" + n_in + " " + n_out);
         
         FFNN ffnn = new FFNN();
-        ffnn.setLearningRate(0.5);
+        ffnn.setLearningRate(0.3);
         ffnn.setNIn(n_in);
         ffnn.setNOut(n_out);
         ffnn.setNHidden(4);
@@ -49,16 +52,19 @@ public class Main {
         /* EVALUATION */
         ///*
         Evaluation eval = new Evaluation(data_train_new);
-        //eval.evaluateModel(ffnn, data_train_new);
-        eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
+        eval.evaluateModel(ffnn, data_train_new);
+        //eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
         System.out.println(eval.errorRate()); //Printing Training Mean root squared Error
         System.out.println(eval.toSummaryString()); //Summary of Training
+        System.out.println(eval.toMatrixString());
         //*/
         
         /*CLASSIFY DATAPREDICT*/
         ///*
         Instances datapredict = new Instances(
         new BufferedReader(new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff")));
+        //new BufferedReader(new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\mush.arff")));
+        //new BufferedReader(new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\Team_test.arff")));
         datapredict.setClassIndex(datapredict.numAttributes() - 1);
         Instances predicteddata = new Instances(datapredict);
             

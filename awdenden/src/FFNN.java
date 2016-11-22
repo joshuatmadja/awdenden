@@ -55,7 +55,7 @@ public class FFNN extends AbstractClassifier {
     }
     
     public int getTotalN() {
-        return this.n_in + this.n_out + this.n_hidden;
+        return (this.n_in + this.n_out + this.n_hidden);
     }
     
     //
@@ -76,7 +76,7 @@ public class FFNN extends AbstractClassifier {
     
     public double outputValue(double x) {
         //System.out.println(1/(1+(Math.exp(-x))));
-        return 1/(1+(Math.exp(-x)));
+        return 1/(1+(Math.exp((-1.0)*x)));
     }
     
     public double errorOutput(double output, double target) {
@@ -94,12 +94,14 @@ public class FFNN extends AbstractClassifier {
             result += error.get(w.getNodeOut()) * w.getValue();
             ++i;
         }
-        result = output*(1-output)*result;
+        double hasil = output*(1-output)* result;
+        //result = output*(1-output)* result;
         return result;
     }
     
     public double getNewWeight(Weight w, ArrayList<Double> node, ArrayList<Double> error) {
-        return w.getValue() + this.learning_rate * node.get(w.getNodeIn()) * error.get(w.getNodeOut());
+        //System.out.println(this.learning_rate);
+        return (w.getValue() + this.learning_rate * node.get(w.getNodeIn()) * error.get(w.getNodeOut()));
     }
     
     @Override
@@ -112,14 +114,15 @@ public class FFNN extends AbstractClassifier {
                 batas_awal = this.getNIn();
                 batas_akhir = this.getTotalN();
             } else {
-                batas_awal = this.getNIn() + 1;
-                batas_akhir = this.n_in + this.n_hidden;      
+                batas_awal = this.getNIn()+1;
+                batas_akhir = this.n_in + this.n_hidden;
             }
             for (int j = batas_awal; j < batas_akhir; ++j) {
                 Weight w = new Weight();
                 w.setValue(new Random().nextDouble() * 0.1 - 0.05);
                 w.setNodeIn(i);
                 w.setNodeOut(j);
+                //System.out.println(i + " " + j);
                 weights.add(w);    
             }
         }
@@ -138,7 +141,7 @@ public class FFNN extends AbstractClassifier {
         
         //
         int loop = 0;
-        while (loop < 1000) {
+        while (loop < 10000) {
             for (int i = 0; i < dataset.numInstances(); ++i) {
                 //Membuat node
                 ArrayList<Double> node;
@@ -197,7 +200,7 @@ public class FFNN extends AbstractClassifier {
             
                 //Set nilai baru pada weights
                 for (int j = 0; j < weights.size(); ++j) {
-                    weights.get(j).setValue(this.getNewWeight(weights.get(j),node,error));
+                    weights.get(j).setValue(this.getNewWeight(weights.get(j), node, error));
                 }
             }
         ++loop;
