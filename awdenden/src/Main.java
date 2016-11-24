@@ -33,6 +33,7 @@ public class Main {
         norm.setOptions(options);
         norm.setInputFormat(data_train);
         Instances data_train_new = Filter.useFilter(data_train, norm);
+        //data_train_new.randomize(new Random(1));
         
         /*BUILD A NEURAL CLASSIFIER*/
         int n_in = data_train_new.numAttributes()- 1;
@@ -40,10 +41,9 @@ public class Main {
         if (n_out <= 2) {
             --n_out;
         }
-        //System.out.println("hai" + n_in + " " + n_out);
         
         FFNN ffnn = new FFNN();
-        ffnn.setLearningRate(0.3);
+        ffnn.setLearningRate(0.05);
         ffnn.setNIn(n_in);
         ffnn.setNOut(n_out);
         ffnn.setNHidden(4);

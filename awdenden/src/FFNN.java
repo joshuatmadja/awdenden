@@ -87,8 +87,11 @@ public class FFNN extends AbstractClassifier {
         //System.out.println("hai " + nodeOut);
         double result = 0.0;
         for (int i = 0; i < this.getWTotal(); ++i) {
-            //System.out.println("    halo " + i);
             if (this.weights.get(i).getNodeOut() == nodeOut) {
+                /*System.out.println("---");
+                System.out.println(this.weights.get(i).getValue());
+                System.out.println("+++");
+                */
                 result += this.nodes.get(this.weights.get(i).getNodeIn()) * this.weights.get(i).getValue();
                 //System.out.println(nodeOut);
             }
@@ -98,7 +101,7 @@ public class FFNN extends AbstractClassifier {
     }
     
     public double outputValue(double nett) {
-        return (1/(1+(Math.exp((-1.0)*nett))));
+        return (1.0/(1.0+(Math.exp((-1.0)*nett))));
     }
     
     public double errorOutput(double output, double target) {
@@ -124,7 +127,7 @@ public class FFNN extends AbstractClassifier {
     
     @Override
     public void buildClassifier(Instances dataset) throws Exception {
-        /*Mengosongkan weights, nodes, dan errors jika belum kosong*/
+        /*Mengosongkan weights, nodes, dan errors*/
         this.weights.clear();
         this.nodes.clear();
         this.errors.clear();
@@ -166,7 +169,7 @@ public class FFNN extends AbstractClassifier {
                     this.nodes.set(j, dataset.instance(i).value(j-1));
                 }
                 
-                //-->
+                //-->Mendapatkan nilai output
                 for (int j = this.n_in; j < this.getNTotal(); ++j) { //index output
                     if (!((j == this.n_in) && (this.n_hidden != 0))) {
                         this.nodes.set(j, this.outputValue(this.nettValue(j)));
@@ -174,7 +177,7 @@ public class FFNN extends AbstractClassifier {
                     //System.out.println(nodes.get(j));
                 }
                 
-                //<--
+                //<--Mendapatkan nilai error
                 double target = dataset.instance(i).classValue();
                 for (int j = this.getNTotal()-1; j >= this.n_in; --j) {
                     if ((j == this.n_in) && (this.n_hidden != 0)) {
@@ -189,13 +192,16 @@ public class FFNN extends AbstractClassifier {
                     } else { //errorHidden
                         //System.out.println(j);
                         this.errors.set(j, this.errorHidden(j, this.nodes.get(j)));
-                    } 
+                    }
+                    //System.out.println(this.errors.get(j));
                 }
+                //System.out.println(this.errors.get(1));
                 
                 //Set nilai baru pada weights
                 for (int j = 0; j < this.getWTotal(); ++j) {
-                    weights.get(j).setValue(this.getNewWeight(j));
+                    this.weights.get(j).setValue(this.getNewWeight(j));
                 }
+                //System.out.println(weights.get(34).getValue());
                 /*
                 System.out.println("begin");
                 System.out.println(nodes.get(10));
@@ -212,17 +218,19 @@ public class FFNN extends AbstractClassifier {
     
     @Override
     public double classifyInstance(Instance data) throws Exception {
+        /*Mengosongkan nodes*/
         this.nodes.clear();
         
-        /*Inisialisasi nodes dan errors*/
+        /*Inisialisasi nodes*/
         for (int i = 0; i < this.getNTotal(); ++i) {
             this.nodes.add(1.0);
         }
         
+        //-->
         for (int j = this.n_in; j < this.getNTotal(); ++j) { //index output
             if (!((j == this.n_in) && (this.n_hidden != 0))) {
                 this.nodes.set(j, this.outputValue(this.nettValue(j)));
-            }    
+            }
         }
         
         double result = 0.0;
