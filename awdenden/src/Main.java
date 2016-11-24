@@ -6,13 +6,18 @@ import java.util.Random;
 
 import weka.core.Instances;
 import weka.filters.Filter;
-import weka.filters.unsupervised.attribute.NominalToBinary;
 import weka.classifiers.Evaluation;
+import weka.filters.unsupervised.attribute.Normalize;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String args[]) throws Exception {
         /*LOAD DATA TRAIN*/
-        FileReader train_reader = new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff");
+        System.out.print("Masukkan direktori menuju file .arff : ");
+        Scanner cin = new Scanner(System.in);
+        String filepath = cin.nextLine();
+        FileReader train_reader = new FileReader(filepath);
+        //FileReader train_reader = new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff");
         //FileReader train_reader = new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\mush.arff");
         //FileReader train_reader = new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\Team_test.arff");
         Instances data_train = new Instances(train_reader);
@@ -20,17 +25,8 @@ public class Main {
             data_train.setClassIndex(data_train.numAttributes() - 1);
         }
         
-        //System.out.println(data_train.instance(0).classValue());
-        //System.out.println(data_train.numInstances());
-        
-        /*NOMINAL TO BINARY ATTRIBUTE*/
-        //set options
-        String[] options = new String[2];
-        options[0] = "-R";
-        options[1] = "first-last";
-        //Apply discretization
-        NominalToBinary norm = new NominalToBinary();
-        norm.setOptions(options);
+        /*NORMALIZE ATTRIBUTE*/
+        Normalize norm = new Normalize();
         norm.setInputFormat(data_train);
         Instances data_train_new = Filter.useFilter(data_train, norm);
         //data_train_new.randomize(new Random(1));
@@ -46,7 +42,9 @@ public class Main {
         ffnn.setLearningRate(0.05);
         ffnn.setNIn(n_in);
         ffnn.setNOut(n_out);
-        ffnn.setNHidden(4);
+        System.out.print("Masukkan jumlah hidden node yang diinginkan: ");
+        int n_hidden = cin.nextInt();
+        ffnn.setNHidden(n_hidden);
         ffnn.buildClassifier(data_train_new);
         
         /* EVALUATION */
@@ -54,15 +52,15 @@ public class Main {
         Evaluation eval = new Evaluation(data_train_new);
         eval.evaluateModel(ffnn, data_train_new);
         //eval.crossValidateModel(ffnn, data_train_new, 10, new Random(1));
-        System.out.println(eval.errorRate()); //Printing Training Mean root squared Error
         System.out.println(eval.toSummaryString()); //Summary of Training
-        System.out.println(eval.toMatrixString());
+        System.out.println(eval.toMatrixString()); //Confusion Matrix
         //*/
         
         /*CLASSIFY DATAPREDICT*/
         ///*
         Instances datapredict = new Instances(
-        new BufferedReader(new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff")));
+        new BufferedReader(new FileReader(filepath)));
+        //new BufferedReader(new FileReader("C:\\Program Files\\Weka-3-8\\data\\iris.arff")));
         //new BufferedReader(new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\mush.arff")));
         //new BufferedReader(new FileReader("C:\\Users\\Kamal Nadjieb\\Documents\\ITB\\AKADEMIK\\V\\IF3170\\Tugas Besar 2\\Team_test.arff")));
         datapredict.setClassIndex(datapredict.numAttributes() - 1);
